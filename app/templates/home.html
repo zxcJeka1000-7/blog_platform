@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Blogging Platform</title>
+	<link href=
+"https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+		rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+	<nav class="bg-gray-800 text-white p-4">
+		<div class="container mx-auto flex
+					justify-between items-center">
+			<h1 class="text-xl font-bold">
+				Blogging Platform
+			</h1>
+			<div class="space-x-4">
+				<a href="#" class="category-link" data-category="HTML">
+					HTML Blogs
+				</a>
+				<a href="#" class="category-link" data-category="DSA">
+					DSA Blogs
+				</a>
+				<a href="#" class="category-link" data-category="PHP">
+					PHP Blogs
+				</a>
+			</div>
+			<div class="flex">
+				<input type="text"
+					id="searchInput"
+					placeholder="Search blogs..."
+					class="w-full px-4 py-2 rounded-md border
+							border-gray-300 focus:outline-none
+							focus:border-blue-500 text-gray-800">
+				<button id="searchButton"
+						class="px-4 py-2 ml-2 bg-blue-500 text-white
+							rounded-md hover:bg-blue-600 
+							focus:outline-none">
+					Search
+				</button>
+			</div>
+		</div>
+	</nav>
+	<div class="container mx-auto mt-4">
+		<div id="blogCards" class="grid grid-cols-1 sm:grid-cols-2
+					lg:grid-cols-3 gap-8">
+		</div>
+	</div>
+	<div id="myModal" class="hidden fixed z-50 inset-0 bg-black 
+				bg-opacity-50 flex justify-center 
+				items-center">
+		<div class="modal-content bg-white rounded-md
+					p-8 max-w-lg w-full relative">
+			<span class="close absolute top-2 right-2
+						text-gray-600 text-2xl 
+						cursor-pointer">
+				×
+			</span>
+			<img id="modalImage"
+				src="#"
+				alt="Blog Image"
+				class="w-full h-32 object-cover mb-4">
+			<h2 id="modalTitle"
+				class="text-lg font-semibold mb-2">
+			</h2>
+			<div id="modalContent"
+				class="text-gray-600 mb-4"></div>
+			<div id="authorDetails"
+				class="text-sm text-gray-500 flex items-center">
+			</div>
+		</div>
+	</div>
+	<script>
+		const blogs = [
+			{
+				id: 1, category: "HTML", title: "Introduction to HTML",
+				description: 
+"Learn the basics of HTML and its importance in web development.",
+				content: "HTML content goes here...", 
+				imageUrl:
+"https://media.geeksforgeeks.org/wp-content/cdn-uploads/20230305182658/HTML-tutorial.jpg",
+				link: "https://www.geeksforgeeks.org/html-tutorial/",
+				date: "2024-02-17", authorName: "John Doe", authorImage:
+					"https://randomuser.me/api/portraits/men/1.jpg"
+			},
+			{
+				id: 2, category: "DSA",
+				title: "Introduction to Data Structures",
+				description: "Explore different data structures and their applications.",
+				content: "DSA content goes here...", 
+				imageUrl:
+"https://media.geeksforgeeks.org/wp-content/cdn-uploads/20230726161506/Data-structure-algorithm-%E2%80%93-1-3.png",
+				link: 
+"https://www.geeksforgeeks.org/learn-data-structures-and-algorithms-dsa-tutorial/?ref=shm",
+				date: "2024-02-18", authorName: "Jane Smith", authorImage:
+					"https://randomuser.me/api/portraits/women/2.jpg"
+			},
+			{
+				id: 3, category: "PHP", title: "Getting Started with PHP",
+				description: "Learn the fundamentals of PHP programming language.",
+				content: "PHP content goes here...", imageUrl:
+"https://media.geeksforgeeks.org/wp-content/uploads/20231211130040/PHP-Tutorial.webp",
+				link: "https://www.geeksforgeeks.org/php-tutorial/?ref=ghm",
+				date: "2024-02-19", authorName: "Alex Johnson",
+				authorImage: "https://randomuser.me/api/portraits/men/3.jpg"
+			}
+		];
+		const blogCardsContainer = document.getElementById("blogCards");
+		const modal = document.getElementById("myModal");
+		const modalImage = document.getElementById("modalImage");
+		const modalTitle = document.getElementById("modalTitle");
+		const modalContent = document.getElementById("modalContent");
+		const authorDetails = document.getElementById("authorDetails");
+		const closeModalBtn = document.querySelector(".close");
+
+		function displayBlogs(query = "", category = "") {
+			blogCardsContainer.innerHTML = "";
+			const filteredBlogs = blogs.filter(blog => {
+				return blog.title.toLowerCase()
+					.includes(query.toLowerCase()) &&
+					(category === "" || blog.category === category);
+			});
+			filteredBlogs.forEach(blog => {
+				const card = document.createElement("div");
+				card.classList.add("bg-white", "p-4", "rounded-md", "shadow-md",
+					"cursor-pointer", "fadeIn", "transform",
+					"hover:scale-105", "transition-all", "duration-300");
+				card.innerHTML = `
+					<img src="${blog.imageUrl}"
+						alt="Blog Image"
+						class="w-full h-32 object-cover mb-4">
+					<h2 class="text-lg font-semibold mb-2">
+						${blog.title}
+					</h2>
+					<p class="text-gray-600 mb-4">${blog.description}</p>
+					<div class="text-sm text-gray-500">
+						${blog.date} by ${blog.authorName}
+					</div>
+					<button class="read-more-btn bg-blue-500 
+								text-white py-1 px-2 mt-2 
+								rounded hover:bg-blue-600 
+								focus:outline-none">
+						Read More
+					</button>
+				`;
+				card.addEventListener("click", function () {
+					openModal(blog);
+				});
+				blogCardsContainer.appendChild(card);
+			});
+		}
+
+		function openModal(blog) {
+			modalImage.src = blog.imageUrl;
+			modalTitle.textContent = blog.title;
+			modalContent.textContent = blog.content;
+			authorDetails.innerHTML = `<img src="${blog.authorImage}"
+											alt="Author Image"
+											class="w-6 h-6 rounded-full mr-2">
+											${blog.authorName}`;
+			modal.classList.remove("hidden");
+		}
+
+		function closeModal() {
+			modal.classList.add("hidden");
+		}
+
+		closeModalBtn.addEventListener("click", closeModal);
+
+		document.querySelectorAll(".category-link").forEach(link => {
+			link.addEventListener("click", function (event) {
+				event.preventDefault();
+				const category = this.getAttribute("data-category");
+				displayBlogs("", category);
+			});
+		});
+
+		document.getElementById("searchButton")
+			.addEventListener("click", function () {
+				const query = document.getElementById("searchInput").value;
+				displayBlogs(query);
+			});
+
+		document.getElementById("searchInput")
+			.addEventListener("input", function () {
+				const query = this.value;
+				displayBlogs(query);
+			});
+
+		displayBlogs();
+	</script>
+</body>
+
+</html>
